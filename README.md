@@ -120,7 +120,8 @@ Stores the ICAO airport codes associated with each city.
 `flights`
 Stores arriving flight information and links flights to departure and arrival airports.
 ---
-⚙️ Technologies
+## ⚙️ Skills/Tools
+
 Programming
 Python
 SQL
