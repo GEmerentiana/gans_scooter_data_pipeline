@@ -330,4 +330,3 @@ The project demonstrates how heterogeneous data sources can be integrated into a
                                   └──────────────┘
 ```
 ---
-This prevents credentials from being accidentally committed to GitHub.
