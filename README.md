@@ -181,27 +181,27 @@ cd Gans-Scooter
 pip install -r requirements.txt
 ```
 3. Create the MySQL database
-Open the SQL file:
+   Open the SQL file:
 ```text
 gans_scooter_database.sql
 ```
-Run it in MySQL Workbench or another MySQL client.
-This creates the:
+  Run it in MySQL Workbench or another MySQL client.
+  This creates the:
 ```text
 gans_cities
 ```
-database and all required tables.
+  database and all required tables.
 
 4. Configure API keys and MySQL credentials
-Copy:
+  Copy:
 ```text
 .env.example
 ```
-to:
+  to:
 ```text
 .env
 ```
-Then add your credentials:
+  Then add your credentials:
 ```env
 OPENWEATHER_API_KEY = your_openweather_api_key
 RAPIDAPI_KEY = your_rapidapi_key
@@ -211,13 +211,13 @@ MYSQL_USER = root
 MYSQL_PASSWORD = your_mysql_password
 MYSQL_DATABASE = gans_cities
 ```
-Do not commit `.env` to GitHub.
+  Do not commit `.env` to GitHub.
 
 5. Run the pipeline
 ```bash
 python gans_scooter_pipeline.py
 ```
-The pipeline performs the following steps:
+  The pipeline performs the following steps:
 ```text
 Wikipedia
     ↓
