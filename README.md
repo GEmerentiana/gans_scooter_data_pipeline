@@ -122,7 +122,7 @@ Stores the ICAO airport codes associated with each city.
 Stores arriving flight information and links flights to departure and arrival airports.
 
 ---
-## ⚙️ Skills/Tools
+⚙️ Skills/Tools
 `Programming` `Python` `SQL` `MySQL` `ETL` `Data Engineering` `Web Scraping` `REST API` `BeautifulSoup` `Requests` `OpenWeather API` `RapidAPI` `AeroDataBox API` `Data Modeling` `Database Design`
 
 ---
@@ -190,6 +190,7 @@ This creates the:
 gans_cities
 ```
 database and all required tables.
+---
 4. Configure API keys and MySQL credentials
 Copy:
 ```text
