@@ -330,11 +330,4 @@ The project demonstrates how heterogeneous data sources can be integrated into a
                                   └──────────────┘
 ```
 ---
-### 🔐 Security
-
-API keys and database passwords are stored in environment variables rather than directly in the Python source code.
-The `.env` file should be added to `.gitignore`:
-```text
-.env
-```
 This prevents credentials from being accidentally committed to GitHub.
