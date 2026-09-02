@@ -9,6 +9,7 @@ Munich
 Frankfurt
 Stuttgart
 The project demonstrates an end-to-end ETL (Extract, Transform, Load) workflow using Python and MySQL.
+
 ---
 🏗️ Data Pipeline Architecture
 ```text
@@ -119,25 +120,11 @@ Stores weather observations associated with each city.
 Stores the ICAO airport codes associated with each city.
 `flights`
 Stores arriving flight information and links flights to departure and arrival airports.
+
 ---
 ## ⚙️ Skills/Tools
+`Programming` `Python` `SQL` `MySQL` `ETL` `Data Engineering` `Web Scraping` `REST API` `BeautifulSoup` `Requests` `OpenWeather API` `RapidAPI` `AeroDataBox API` `Data Modeling` `Database Design`
 
-Programming
-Python
-SQL
-Web Scraping
-Requests
-BeautifulSoup
-APIs
-OpenWeather API
-RapidAPI
-AeroDataBox API
-Database
-MySQL
-MySQL Connector/Python
-Configuration
-Python-dotenv
-Environment variables
 ---
 🔄 ETL Process
 Extract
@@ -267,6 +254,7 @@ API integration
 Error handling
 Environment-variable management
 Data validation
+
 ---
 ## 📈 Possible Future Improvements
 
@@ -285,6 +273,7 @@ Apache Airflow orchestration
 Power BI or Tableau dashboard
 Automated testing
 CI/CD integration
+
 ---
 🧠 Data Engineering Concepts Demonstrated
 This project follows a simple but complete data engineering architecture:
@@ -346,10 +335,3 @@ The `.env` file should be added to `.gitignore`:
 .env
 ```
 This prevents credentials from being accidentally committed to GitHub.
----
-### 📝 Notes
-
-The pipeline is designed as a portfolio/data-engineering project and can be extended with additional data sources, cities, historical data, orchestration, testing, and visualization.
----
-🧰 Skills
-`Python` `SQL` `MySQL` `ETL` `Data Engineering` `Web Scraping` `REST API` `BeautifulSoup` `Requests` `OpenWeather API` `RapidAPI` `AeroDataBox` `Data Modeling` `Database Design`
