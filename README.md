@@ -190,6 +190,7 @@ This creates the:
 gans_cities
 ```
 database and all required tables.
+
 ---
 4. Configure API keys and MySQL credentials
 Copy:
