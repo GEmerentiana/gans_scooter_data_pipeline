@@ -328,5 +328,3 @@ The project demonstrates how heterogeneous data sources can be integrated into a
                                   │ flight no.   │
                                   │ arrival time │
                                   └──────────────┘
-```
----
