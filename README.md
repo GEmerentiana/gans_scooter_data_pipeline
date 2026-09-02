@@ -211,6 +211,7 @@ MYSQL_PASSWORD=your_mysql_password
 MYSQL_DATABASE=gans_cities
 ```
 Do not commit `.env` to GitHub.
+
 5. Run the pipeline
 ```bash
 python gans_scooter_pipeline.py
