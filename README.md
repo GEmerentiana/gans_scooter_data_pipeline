@@ -1,4 +1,5 @@
 Gans Scooter – City Data Engineering Pipeline
+
 📌 Project Overview
 Gans Scooter is a data engineering project that collects, transforms, and stores real-world data from multiple external sources into a MySQL database.
 The pipeline combines web scraping and APIs to collect information about five major German cities:
