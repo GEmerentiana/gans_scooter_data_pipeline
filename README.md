@@ -202,13 +202,13 @@ to:
 ```
 Then add your credentials:
 ```env
-OPENWEATHER_API_KEY=your_openweather_api_key
-RAPIDAPI_KEY=your_rapidapi_key
+OPENWEATHER_API_KEY = your_openweather_api_key
+RAPIDAPI_KEY = your_rapidapi_key
 
-MYSQL_HOST=localhost
-MYSQL_USER=root
-MYSQL_PASSWORD=your_mysql_password
-MYSQL_DATABASE=gans_cities
+MYSQL_HOST = localhost
+MYSQL_USER = root
+MYSQL_PASSWORD = your_mysql_password
+MYSQL_DATABASE = gans_cities
 ```
 Do not commit `.env` to GitHub.
 
