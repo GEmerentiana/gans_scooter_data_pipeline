@@ -153,6 +153,7 @@ airports
 flights
 ```
 After loading, the pipeline reads data back from MySQL to validate the stored records.
+
 ---
 📂 Project Structure
 ```text
