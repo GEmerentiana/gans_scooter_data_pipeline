@@ -249,7 +249,8 @@ Read data back from MySQL
 Validate results
 ```
 ---
-🎯 Project Goals
+## 🎯 Project Goals
+
 This project demonstrates practical skills in:
 Data extraction
 Web scraping
@@ -266,7 +267,8 @@ Error handling
 Environment-variable management
 Data validation
 ---
-📈 Possible Future Improvements
+## 📈 Possible Future Improvements
+
 Future versions of the pipeline could include:
 Automated daily execution
 Historical weather data
@@ -335,7 +337,8 @@ The project demonstrates how heterogeneous data sources can be integrated into a
                                   └──────────────┘
 ```
 ---
-🔐 Security: 
+### 🔐 Security
+
 API keys and database passwords are stored in environment variables rather than directly in the Python source code.
 The `.env` file should be added to `.gitignore`:
 ```text
@@ -343,7 +346,8 @@ The `.env` file should be added to `.gitignore`:
 ```
 This prevents credentials from being accidentally committed to GitHub.
 ---
-📝 Notes: 
+### 📝 Notes
+
 The pipeline is designed as a portfolio/data-engineering project and can be extended with additional data sources, cities, historical data, orchestration, testing, and visualization.
 ---
 🧰 Skills
