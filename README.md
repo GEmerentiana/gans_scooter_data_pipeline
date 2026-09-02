@@ -335,7 +335,7 @@ The project demonstrates how heterogeneous data sources can be integrated into a
                                   └──────────────┘
 ```
 ---
-🔐 Security
+🔐 Security: 
 API keys and database passwords are stored in environment variables rather than directly in the Python source code.
 The `.env` file should be added to `.gitignore`:
 ```text
@@ -343,11 +343,8 @@ The `.env` file should be added to `.gitignore`:
 ```
 This prevents credentials from being accidentally committed to GitHub.
 ---
-📝 Notes
+📝 Notes: 
 The pipeline is designed as a portfolio/data-engineering project and can be extended with additional data sources, cities, historical data, orchestration, testing, and visualization.
----
-👤 Author
-GEmerentiana
 ---
 🧰 Skills
 `Python` `SQL` `MySQL` `ETL` `Data Engineering` `Web Scraping` `REST API` `BeautifulSoup` `Requests` `OpenWeather API` `RapidAPI` `AeroDataBox` `Data Modeling` `Database Design`
