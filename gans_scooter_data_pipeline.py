@@ -14,8 +14,9 @@ from __future__ import annotations
 
 import os
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import mysql.connector
 import requests
@@ -332,11 +333,15 @@ def get_weather_data(
     weather = data.get("weather", [])
 
     observed_at = datetime.fromtimestamp(
-        data["dt"]
-    )
+        data["dt"], tz=timezone.utc
+    ).replace(tzinfo=None)
 
-    sunrise = datetime.fromtimestamp(data["sys"]["sunrise"])
-    sunset = datetime.fromtimestamp(data["sys"]["sunset"])
+    sunrise = datetime.fromtimestamp(
+        data["sys"]["sunrise"], tz=timezone.utc
+    ).replace(tzinfo=None)
+    sunset = datetime.fromtimestamp(
+        data["sys"]["sunset"], tz=timezone.utc
+    ).replace(tzinfo=None)
 
     result = {
         "city": city_name,
@@ -527,7 +532,7 @@ def get_flight_data(
             "withLeg": "true",
             "direction": "Arrival",
             "withCancelled": "false",
-            "withCodeshared": "true",
+            "withCodeshared": "false",
             "withCargo": "false",
             "withPrivate": "false",
             "withLocation": "false",
@@ -561,7 +566,7 @@ def get_flight_data(
                     "departure_airport_name": departure_airport.get("name"),
                     "flight_number": flight.get("number"),
                     "scheduled_arrival_time": scheduled_local,
-                    "data_retrieved_at": datetime.now(),
+                    "data_retrieved_at": datetime.now(timezone.utc).replace(tzinfo=None),
                 }
             )
 
@@ -571,7 +576,7 @@ def get_flight_data(
 
 def load_flight_data() -> None:
     """Retrieve tomorrow's arrivals and load them into MySQL."""
-    target_date = date.today() + timedelta(days=1)
+    target_date = datetime.now(ZoneInfo("Europe/Berlin")).date() + timedelta(days=1)
 
     print(f"[Flights] Target date: {target_date}")
 

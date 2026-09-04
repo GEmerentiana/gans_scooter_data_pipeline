@@ -125,19 +125,14 @@ CREATE TABLE flights (
 
     PRIMARY KEY (flight_id),
 
+    -- Departure airports can be outside the five-city airport dimension,
+    -- so departure_airport_icao is intentionally not a foreign key.
     CONSTRAINT fk_flights_arrival_airport
         FOREIGN KEY (arrival_airport_icao)
         REFERENCES airports(icao)
         ON UPDATE CASCADE
         ON DELETE SET NULL,
-
-    CONSTRAINT fk_flights_departure_airport
-        FOREIGN KEY (departure_airport_icao)
-        REFERENCES airports(icao)
-        ON UPDATE CASCADE
-        ON DELETE SET NULL,
-
-    -- Prevent repeated loading of the same flight/time snapshot.
+-- Prevent repeated loading of the same flight/time snapshot.
     UNIQUE KEY uq_flight_record (
         arrival_airport_icao,
         departure_airport_icao,

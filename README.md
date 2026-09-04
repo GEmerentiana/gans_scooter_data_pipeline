@@ -1,8 +1,8 @@
 # Gans Scooter – City Data Engineering Pipeline
 
-An end-to-end **Python + SQL ETL pipeline** that combines heterogeneous external data sources for five major German cities and stores the transformed data in a relational MySQL database.
+An end-to-end **Python + SQL ETL pipeline** that integrates heterogeneous external data sources for five major German cities and stores the transformed data in a relational MySQL database.
 
-The project demonstrates practical data-engineering skills: **web scraping, REST APIs, data transformation, relational modelling, ETL orchestration, error handling, environment-variable management, and data validation**.
+The project demonstrates practical data-engineering skills including **web scraping, REST API integration, data transformation, relational database design, ETL orchestration, error handling, environment-variable management, idempotent loading, and data validation**.
 
 ## Project scope
 
@@ -14,44 +14,44 @@ The pipeline currently covers:
 - Frankfurt
 - Stuttgart
 
-For each city, it collects:
+It collects:
 
 1. **City and population data** from Wikipedia
 2. **Current weather data** from OpenWeather
-3. **Airport information** for the selected city airports
-4. **Arriving flight data** from AeroDataBox through RapidAPI
+3. **Airport reference data** for the five configured city airports
+4. **Tomorrow's arriving flights** from AeroDataBox through RapidAPI
 5. **Validation results** from MySQL after loading
 
 ## Architecture
 
 ```text
-                    EXTERNAL SOURCES
-          ┌──────────────┼───────────────┐
-          │              │               │
-          ▼              ▼               ▼
-      Wikipedia      OpenWeather     RapidAPI
-      Web Scraping       API        / AeroDataBox
-          │              │               │
-          └──────────────┼───────────────┘
+                    EXTERNAL DATA SOURCES
+          ┌──────────────┼────────────────┐
+          │              │                │
+          ▼              ▼                ▼
+      Wikipedia      OpenWeather      RapidAPI
+      Web Scraping       API         / AeroDataBox
+          │              │                │
+          └──────────────┼────────────────┘
                          ▼
-                  Python ETL Pipeline
+                 Python ETL Pipeline
                          │
-             ┌───────────┼───────────┐
-             ▼           ▼           ▼
-          Extract     Transform     Load
-                         │
-                         ▼
-                    MySQL Database
-                         │
-             ┌───────────┼───────────┐
-             ▼           ▼           ▼
-          Cities      Weather      Airports
-             │                         │
-             ▼                         ▼
-       Populations                  Flights
-                         │
-                         ▼
-                    SQL Validation
+              ┌──────────┼───────────┐
+              ▼          ▼           ▼
+           Extract    Transform     Load
+                                      │
+                                      ▼
+                                MySQL Database
+                                      │
+              ┌───────────────────────┼────────────────┐
+              ▼                       ▼                ▼
+           Cities                  Weather          Airports
+              │                                        │
+              ▼                                        ▼
+        Populations                                  Flights
+                                      │
+                                      ▼
+                                SQL Validation
 ```
 
 ## Data sources
@@ -67,11 +67,11 @@ Python `requests` and `BeautifulSoup` are used to extract:
 - population
 - population collection date
 
-Population data is stored as a **snapshot**, so the database can support future historical population observations.
+Population values are stored as daily snapshots, allowing future historical observations.
 
 ### 2. OpenWeather
 
-The pipeline uses the OpenWeather current-weather endpoint and stores:
+The pipeline uses the OpenWeather **current weather** endpoint and stores:
 
 - observation timestamp
 - temperature
@@ -83,13 +83,13 @@ The pipeline uses the OpenWeather current-weather endpoint and stores:
 - sunset
 - weather description
 
-Weather observations are linked to the corresponding city through a foreign key.
+Weather timestamps are stored in **UTC** in the database.
 
 ### 3. AeroDataBox via RapidAPI
 
-The flight step retrieves arriving flights for:
+The flight step retrieves **tomorrow's arrivals** for:
 
-| City | Airport |
+| City | ICAO |
 |---|---|
 | Berlin | EDDB |
 | Hamburg | EDDH |
@@ -97,7 +97,7 @@ The flight step retrieves arriving flights for:
 | Frankfurt | EDDF |
 | Stuttgart | EDDS |
 
-The pipeline retrieves **tomorrow's arrivals**, using `Europe/Berlin` for the target date.
+The target date is calculated using the `Europe/Berlin` timezone.
 
 Stored flight fields include:
 
@@ -107,6 +107,8 @@ Stored flight fields include:
 - flight number
 - scheduled arrival time
 - retrieval timestamp
+
+The pipeline requests non-codeshare arrivals to reduce duplicate representations of the same flight.
 
 ## Database model
 
@@ -124,41 +126,58 @@ cities
          └── flights
 ```
 
-### Tables
+### `cities`
 
-**cities**
+Master city data:
+
 - `city_id` – primary key
 - `city`
 - `country`
 - `latitude`
 - `longitude`
 
-**populations**
+### `populations`
+
+Population snapshots:
+
 - `city_id` – foreign key
 - `population`
 - `date_gathered`
-- composite primary key prevents duplicate snapshots for the same city/date
+- composite primary key prevents duplicate city/date snapshots
 
-**weather**
+### `weather`
+
+Weather observations:
+
 - `weather_id` – primary key
 - `observation_datetime`
-- weather measurements
+- temperature and weather measurements
 - `city_id` – foreign key
-- unique city/timestamp constraint helps prevent duplicate observations
+- unique `(city_id, observation_datetime)` constraint prevents duplicate observations
 
-**airports**
+### `airports`
+
+Reference airport data:
+
 - `airport_id` – primary key
 - `city_id` – foreign key
 - `icao` – unique airport identifier
 
-**flights**
+### `flights`
+
+Arriving flight data:
+
 - `flight_id` – primary key
-- arrival/departure airport ICAO
-- departure airport name
-- flight number
-- scheduled arrival time
-- retrieval timestamp
-- indexes support airport/time analysis
+- `arrival_airport_icao` – foreign key to the configured arrival-airport dimension
+- `departure_airport_icao`
+- `departure_airport_name`
+- `flight_number`
+- `scheduled_arrival_time`
+- `data_retrieved_at`
+
+The departure ICAO is intentionally **not** a foreign key because arriving flights can originate from airports outside the five-city airport reference table.
+
+A composite uniqueness constraint supports idempotent loading of the same arrival/departure/flight/time record.
 
 ## Repository structure
 
@@ -167,10 +186,11 @@ gans_scooter_data_pipeline/
 │
 ├── README.md
 ├── gans_scooter_data_pipeline.py
-├── gans_scooter_database.sql
 ├── gans_scooter_data_pipeline.ipynb
+├── gans_scooter_database.sql
 ├── requirements.txt
-└── .env.example
+├── .env.example
+└── .gitignore
 ```
 
 ## Installation
@@ -184,9 +204,16 @@ cd gans_scooter_data_pipeline
 
 ### 2. Create a virtual environment
 
-Windows:
+Windows PowerShell:
 
-```bash
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Windows Command Prompt:
+
+```cmd
 python -m venv .venv
 .venv\Scripts\activate
 ```
@@ -204,18 +231,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Recommended `requirements.txt`:
-
-```text
-requests
-beautifulsoup4
-mysql-connector-python
-python-dotenv
-```
-
 ## Configuration
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root by copying `.env.example`.
+
+Example:
 
 ```text
 OPENWEATHER_API_KEY=your_openweather_api_key
@@ -228,19 +248,25 @@ MYSQL_PASSWORD=your_mysql_password
 MYSQL_DATABASE=gans_cities
 ```
 
-Never commit `.env` to GitHub.
+Never commit `.env` or API keys to GitHub.
 
 ## Create the database
 
-Run:
+The SQL script creates the complete `gans_cities` schema.
+
+### MySQL CLI
 
 ```bash
 mysql -u root -p < gans_scooter_database.sql
 ```
 
-Or open `gans_scooter_database.sql` in MySQL Workbench and execute it.
+### MySQL Workbench
 
-> The SQL script recreates the `gans_cities` schema. Do not run it against a database containing data you want to keep.
+Open `gans_scooter_database.sql` and execute the script.
+
+> **Important:** the SQL file recreates the `gans_cities` database. It contains `DROP DATABASE IF EXISTS gans_cities`, so do not run it against a database containing data you want to keep.
+
+The SQL script also inserts the five initial city and airport reference records and includes validation queries.
 
 ## Run the ETL pipeline
 
@@ -248,88 +274,113 @@ Or open `gans_scooter_database.sql` in MySQL Workbench and execute it.
 python gans_scooter_data_pipeline.py
 ```
 
-The pipeline runs:
+The pipeline executes:
 
 ```text
 1. Validate configuration
         ↓
 2. Scrape city + population data
         ↓
-3. Load cities/populations
+3. Load cities and population snapshots
         ↓
-4. Load current weather
+4. Read city coordinates
         ↓
-5. Load airport mappings
+5. Retrieve current weather
         ↓
-6. Retrieve tomorrow's flight arrivals
+6. Load weather observations
         ↓
-7. Load flight records
+7. Load airport mappings
         ↓
-8. Run database validation
+8. Retrieve tomorrow's flight arrivals
+        ↓
+9. Load flight records
+        ↓
+10. Validate database contents
 ```
 
-The script is designed to continue processing other cities when an individual external request fails, while clearly reporting the error.
+The pipeline uses transactions and parameterized SQL statements. Individual external requests are handled with timeouts and reported errors so that one failed city/API request does not automatically stop all other city processing.
+
+## Notebook
+
+`gans_scooter_data_pipeline.ipynb` provides an interactive/documentation version of the same ETL workflow.
+
+Use the notebook when you want to:
+
+- execute the pipeline step by step
+- inspect extracted data
+- demonstrate transformations
+- show SQL validation results
+- explain the project during a portfolio presentation or interview
+
+Use `gans_scooter_data_pipeline.py` as the reusable standalone ETL script.
 
 ## SQL validation
 
-The SQL file includes validation queries for:
+The SQL file includes checks for:
 
-- row counts by table
-- city/population records
-- weather observations
+- row counts
+- city master data
+- latest population snapshot per city
+- latest weather observation per city
 - airport mappings
 - flight records
-- flights grouped by destination airport
-- latest weather observation per city
-- duplicate checks
+- duplicate flight records
+- flight counts by arrival airport
 
-These queries make the project easier to demonstrate in a portfolio or technical interview.
-
-## Important API notes
-
-The pipeline requires valid API credentials and depends on the current availability and terms of the external services.
-
-Because flight information is time-sensitive, results will change between pipeline runs.
-
-The pipeline stores **retrieval timestamps** so that users can distinguish the scheduled flight time from the time at which the API data was collected.
+These checks make it easier to verify the pipeline after execution.
 
 ## Data-engineering practices demonstrated
 
 - ETL architecture
-- API integration
 - web scraping
-- relational database design
+- REST API integration
+- Python data transformation
+- relational database modelling
 - primary and foreign keys
-- indexes and uniqueness constraints
+- indexes
+- uniqueness constraints
 - parameterized SQL
 - transaction handling
-- environment variables
-- timezone-aware date handling
-- HTTP timeouts
-- API error handling
-- data validation
+- environment-variable management
+- API timeouts
+- error handling
+- idempotent loading
+- UTC timestamp storage
+- validation and quality checks
 - reproducible local setup
+
+## Limitations
+
+This is a portfolio project rather than a production system.
+
+- Wikipedia page structure can change and may require parser updates.
+- API availability, quotas, pricing, and response formats can change.
+- Flight data is time-sensitive and will differ between runs.
+- The project currently loads current weather rather than a full historical weather series.
+- Flight history is not archived as immutable daily snapshots.
+- No scheduler or orchestration platform is included yet.
 
 ## Future improvements
 
-Potential production-oriented extensions:
+Possible production-oriented extensions:
 
 - automated daily execution
-- historical weather collection
-- historical flight snapshots
 - structured logging
 - API retry with exponential backoff
-- incremental loading
-- stronger flight deduplication using API identifiers
+- historical weather collection
+- historical flight snapshots
+- stronger flight deduplication using provider-specific identifiers
 - automated data-quality tests
 - Docker
 - Apache Airflow
 - cloud database deployment
-- dashboarding with Power BI, Tableau, or Looker Studio
-- CI/CD with GitHub Actions
+- Power BI, Tableau, or Looker Studio dashboard
+- GitHub Actions CI/CD
 
 ## Portfolio value
 
-This project is intended to demonstrate the complete path from **external data source → extraction → transformation → relational storage → validation**.
+This project demonstrates the complete data flow:
 
-It is especially useful as a portfolio example because it combines multiple data formats and source types rather than relying on a single static CSV file.
+**External source → Extract → Transform → Load → Store → Validate**
+
+It is especially useful as a portfolio example because it integrates **web-scraped data, API data, relational modelling, and validation** in one reproducible ETL workflow.
